@@ -1,0 +1,18 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: deploy-a-app
+  namespace: argocd          # MUST be argocd (where the controller lives)
+spec:
+  project: default           # ArgoCD project for RBAC/scoping
+  source:
+    repoURL: https://github.com/HarryQin99/deploy-a-service.git
+    targetRevision: main     # branch, tag, or commit SHA
+    path: k8s                # subdirectory in the repo containing manifests
+  destination:
+    server: https://kubernetes.default.svc   # the in-cluster API
+    namespace: default       # where to deploy the workloads
+  syncPolicy:
+    automated:
+      prune: true            # delete resources removed from Git
+      selfHeal: true         # revert manual kubectl changes

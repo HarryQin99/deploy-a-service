@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deploy-a-app
+  labels:
+    app: deploy-a-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: deploy-a-app
+  template:
+    metadata:
+      labels:
+        app: deploy-a-app
+    spec:
+      imagePullSecrets:
+        - name: ecr-secret
+      containers:
+        - name: deploy-a-app
+          image: 514180701737.dkr.ecr.ap-southeast-2.amazonaws.com/deploy-a-app:abc123
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
