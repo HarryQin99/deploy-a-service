@@ -18,7 +18,7 @@ spec:
         - name: ecr-secret
       containers:
         - name: deploy-a-app
-          image: ghcr.io/harryqin99/deploy-a-service:2bd5740c16d0599b5796f8cf7ab7012c5ea39896
+          image: ghcr.io/harryqin99/deploy-a-service:180f28de0fce58290ab04b99063cd67af0a7a146
           imagePullPolicy: Always
           ports:
             - containerPort: 8080
