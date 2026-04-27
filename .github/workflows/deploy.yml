@@ -2,12 +2,14 @@ name: Build Image
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'k8s/**'
 
 jobs:
   build:
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write    # ← bumped from read so we can commit
       packages: write
     steps:
       - uses: actions/checkout@v4
@@ -32,3 +34,15 @@ jobs:
           tags: |
             ${{ steps.image.outputs.name }}:${{ github.sha }}
             ${{ steps.image.outputs.name }}:latest
+
+      - name: Update k8s manifest
+        env:
+          IMAGE_NAME: ${{ steps.image.outputs.name }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          sed -i "s|image: ghcr.io/harryqin99/deploy-a-service:.*|image: ${IMAGE_NAME}:${IMAGE_TAG}|" k8s/deployment.yaml
+          git config user.email "github-actions@github.com"
+          git config user.name "github-actions[bot]"
+          git add k8s/deployment.yaml
+          git diff --staged --quiet || git commit -m "ci: update image to ${IMAGE_TAG}"
+          git push
